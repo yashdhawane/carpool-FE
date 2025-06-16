@@ -19,10 +19,10 @@ import {
   Menu,
 } from "lucide-react"
 import Link from "next/link"
-import {HeroIllustration} from "@/illustration/HeroIllustration"
-import {BenefitsIllustration} from "@/illustration/BenefitsIllustration"
-import {SafetyIllustration} from "@/illustration/SafetyIllustration"
-import {MobileAppIllustration} from "@/illustration/MobileAppIllustration"
+import {HeroIllustration} from "@/illustration/landingpage/HeroIllustration"
+import {BenefitsIllustration} from "@/illustration/landingpage/BenefitsIllustration"
+import {SafetyIllustration} from "@/illustration/landingpage/SafetyIllustration"
+import {MobileAppIllustration} from "@/illustration/landingpage/MobileAppIllustration"
 // Custom SVG Illustrations
 
 
