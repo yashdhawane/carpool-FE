@@ -1,3 +1,5 @@
+'use client';
+import { useState, FormEvent } from 'react';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,34 +7,134 @@ import { Badge } from "@/components/ui/badge"
 import { Car, Mail, Lock, User, ArrowLeft, Leaf, Shield, DollarSign } from "lucide-react"
 import Link from "next/link"
 import axios from 'axios';
+import { Toaster, toast } from 'react-hot-toast';
+
 import {SignupIllustration} from "@/illustration/signup/SignupIllustration"
-// Signup Illustration
+import { useRouter } from 'next/navigation';
 
+interface FormData {
+  fullName: string;
+  email: string;
+  password: string;
+  terms: boolean;
+  newsletter: boolean;
+}
 
-const handleRegister = async () => {
-  try {
-    const response = await axios.post('http://localhost:3001/v1/auth/register', {
-      // Add your registration data here
-      email: '',
-      password: '',
-      // other required fields
-    });
+interface SignupResponse {
+  success: boolean;
+  message: string;
+  accessToken: string;
+  refreshToken: string;
+}
 
-    if (response.status === 201) {
-      // Registration successful
-      console.log('Registration successful:', response.data);
-      // Add your success handling (e.g., redirect, show message)
-    }
-  } catch (error) {
-    console.error('Registration failed:', error);
-    // Add your error handling
-  }
-};
+// Add this interface for error responses
+interface SignupErrorResponse {
+  success: boolean;
+  message: string;
+}
+
 
 export default function SignupPage() {
+
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [formData, setFormData] = useState<FormData>({
+        fullName: '',
+        email: '',
+        password: '',
+        terms: false,
+        newsletter: false
+    });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+    
+    const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+    
+    
+    try {
+      const response = await axios.post('http://localhost:3001/v1/auth/register', {
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+        
+      });
+
+      if (response.status === 201) {
+         const data = response.data as SignupResponse;
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+        toast.success(data.message || 'Account created successfully!', {
+        duration: 6000,
+        position: 'top-center',
+        icon: '🎉',
+      });
+        router.push('/search'); // Redirect to login page
+      }
+    } 
+    // Ignore the TypeScript error on the next line
+   
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (error: any) {
+    if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          // Validation errors
+          const errorData = error.response.data as SignupErrorResponse;
+          toast.error(errorData.message);
+          setError(errorData.message);
+          break;
+          
+        case 409:
+          // Email already exists
+          toast.error('Email already registered');
+          setError('Email already registered');
+          break;
+          
+        case 422:
+          // Invalid input data
+          toast.error('Please check your input data');
+          setError('Please check your input data');
+          break;
+          
+        case 429:
+          // Rate limiting
+          toast.error('Too many attempts. Please try again later');
+          setError('Too many attempts. Please try again later');
+          break;
+          
+        default:
+          toast.error('Registration failed. Please try again.');
+          setError('Registration failed. Please try again.');
+      }
+    } else if (error.request) {
+      toast.error('Network error. Please check your connection.');
+      setError('Network error. Please check your connection.');
+    } else {
+      toast.error('Registration failed. Please try again.');
+      setError('Registration failed. Please try again.');
+    }
+  }
+    finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
       {/* Animated background elements */}
+       <Toaster />
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animate-delay-2000"></div>
@@ -89,20 +191,27 @@ export default function SignupPage() {
                 <p className="text-gray-600">Join RideShare and start saving today</p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <form className="space-y-4" role="form" aria-label="Signup form">
+                 {error && (
+                  <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+                    {error}
+                  </div>
+                )}
+                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Name Field */}
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium text-gray-700">
+                    <label htmlFor="fullName" className="text-sm font-medium text-gray-700">
                       Full Name
                     </label>
                     <div className="relative group">
-                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600 transition-colors group-focus-within:text-green-700" />
+                      <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600" />
                       <Input
-                        id="name"
+                        id="fullName"
+                        name="fullName"
                         type="text"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
                         placeholder="Enter your full name"
-                        className="pl-10 border-green-200 focus:border-green-500 focus:ring-green-500 transition-all duration-200 hover:border-green-300"
-                        aria-label="Full name"
+                        className="pl-10 border-green-200 focus:border-green-500"
                         required
                       />
                     </div>
@@ -114,13 +223,15 @@ export default function SignupPage() {
                       Email Address
                     </label>
                     <div className="relative group">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600 transition-colors group-focus-within:text-green-700" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600" />
                       <Input
                         id="email"
+                        name="email"
                         type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
                         placeholder="Enter your email"
-                        className="pl-10 border-green-200 focus:border-green-500 focus:ring-green-500 transition-all duration-200 hover:border-green-300"
-                        aria-label="Email address"
+                        className="pl-10 border-green-200 focus:border-green-500"
                         required
                       />
                     </div>
@@ -132,59 +243,68 @@ export default function SignupPage() {
                       Password
                     </label>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600 transition-colors group-focus-within:text-green-700" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600" />
                       <Input
                         id="password"
+                        name="password"
                         type="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
                         placeholder="Create a strong password"
-                        className="pl-10 border-green-200 focus:border-green-500 focus:ring-green-500 transition-all duration-200 hover:border-green-300"
-                        aria-label="Password"
+                        className="pl-10 border-green-200 focus:border-green-500"
                         required
                       />
                     </div>
-                    <p className="text-xs text-gray-500">Must be at least 8 characters long</p>
                   </div>
 
-                  {/* Terms and Conditions */}
+                  {/* Terms Checkbox */}
                   <div className="flex items-start space-x-2">
                     <input
                       type="checkbox"
                       id="terms"
-                      className="rounded border-green-300 text-green-600 focus:ring-green-500 mt-1"
+                      name="terms"
+                      checked={formData.terms}
+                      onChange={handleInputChange}
+                      className="rounded border-green-300 text-green-600 mt-1"
                       required
                     />
-                    <label htmlFor="terms" className="text-sm text-gray-600 cursor-pointer">
-                      I agree to the{" "}
-                      <Link href="/terms" className="text-green-600 hover:text-green-700 hover:underline">
-                        Terms of Service
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy" className="text-green-600 hover:text-green-700 hover:underline">
-                        Privacy Policy
-                      </Link>
+                    <label htmlFor="terms" className="text-sm text-gray-600">
+                      I agree to the Terms and Privacy Policy
                     </label>
                   </div>
 
-                  {/* Newsletter Subscription */}
+                  {/* Newsletter Checkbox */}
                   <div className="flex items-center space-x-2">
                     <input
                       type="checkbox"
                       id="newsletter"
-                      className="rounded border-green-300 text-green-600 focus:ring-green-500"
+                      name="newsletter"
+                      checked={formData.newsletter}
+                      onChange={handleInputChange}
+                      className="rounded border-green-300 text-green-600"
                     />
-                    <label htmlFor="newsletter" className="text-sm text-gray-600 cursor-pointer">
-                      Send me eco-tips and ride updates
+                    <label htmlFor="newsletter" className="text-sm text-gray-600">
+                      Send me updates and offers
                     </label>
                   </div>
 
-                  {/* Signup Button */}
+                  {/* Submit Button */}
                   <Button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-                    size="lg"
-                    onClick={handleRegister}
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    disabled={isLoading}
                   >
-                    Create Account
+                    {isLoading ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Creating account...
+                      </span>
+                    ) : (
+                      'Create Account'
+                    )}
                   </Button>
                 </form>
 

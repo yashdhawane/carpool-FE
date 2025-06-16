@@ -1,3 +1,5 @@
+"use client"
+import { useState, FormEvent } from 'react';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -5,13 +7,125 @@ import { Badge } from "@/components/ui/badge"
 import { Car, Mail, Lock, ArrowLeft, Leaf, Users } from "lucide-react"
 import Link from "next/link"
 import {LoginIllustration} from "@/illustration/login/LoginIllustration"
-// Login Illustration
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { Toaster, toast } from 'react-hot-toast';
 
 
+interface FormData {
+  
+  email: string;
+  password: string;
+  remember?: boolean;
+}
+
+interface LoginResponse {
+  success: boolean;
+  message: string;
+  accessToken: string;
+  refreshToken: string;
+}
+interface LoginErrorResponse {
+  success: boolean;
+  message: string;
+}
 export default function LoginPage() {
+     const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState<FormData>({
+   
+    email: '',
+    password: '',
+    
+    
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await axios.post('http://localhost:3001/v1/auth/login', {
+        email: formData.email,
+        password: formData.password
+      });
+
+       if (response.status === 200) {
+         const data = response.data as LoginResponse;
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('refreshToken', data.refreshToken);
+         // Success toast
+        toast.success('Successfully logged in!', {
+          duration: 6000,
+          position: 'top-center',
+          icon: '👋',
+        });
+        router.push('/search'); // Redirect to login page
+      }
+
+    
+    }
+  
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    catch (error: any) {
+     if (error.response) {
+      switch (error.response.status) {
+        case 400:
+          // Bad request - typically validation errors
+          const errorData = error.response.data as LoginErrorResponse;
+          toast.error(errorData.message);
+          setError(errorData.message);
+          break;
+          
+        case 401:
+          // Unauthorized - invalid credentials
+          toast.error('Invalid email or password');
+          setError('Invalid email or password');
+          break;
+          
+        case 404:
+          // Not found - user doesn't exist
+          toast.error('User not found');
+          setError('User not found');
+          break;
+          
+        case 429:
+          // Too many requests
+          toast.error('Too many attempts. Please try again later');
+          setError('Too many attempts. Please try again later');
+          break;
+          
+        default:
+          toast.error('An unexpected error occurred');
+          setError('An unexpected error occurred');
+      }
+    } else if (error.request) {
+      toast.error('Network error. Please check your connection.');
+      setError('Network error. Please check your connection.');
+    } else {
+      toast.error('Login failed. Please try again.');
+      setError('Login failed. Please try again.');
+    }
+       
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 relative overflow-hidden">
       {/* Animated background elements */}
+      <Toaster />
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animate-delay-2000"></div>
@@ -63,20 +177,28 @@ export default function LoginPage() {
                 <p className="text-gray-600">Sign in to your RideShare account</p>
               </CardHeader>
               <CardContent className="space-y-6">
-                <form className="space-y-4" role="form" aria-label="Login form">
+                  {error && (
+                  <div className="p-3 text-sm text-red-600 bg-red-50 rounded-md">
+                    {error}
+                  </div>
+                )}
+                
+                <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Email Field */}
                   <div className="space-y-2">
                     <label htmlFor="email" className="text-sm font-medium text-gray-700">
                       Email Address
                     </label>
                     <div className="relative group">
-                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600 transition-colors group-focus-within:text-green-700" />
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600" />
                       <Input
                         id="email"
+                        name="email"
                         type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
                         placeholder="Enter your email"
-                        className="pl-10 border-green-200 focus:border-green-500 focus:ring-green-500 transition-all duration-200 hover:border-green-300"
-                        aria-label="Email address"
+                        className="pl-10 border-green-200 focus:border-green-500"
                         required
                       />
                     </div>
@@ -88,39 +210,57 @@ export default function LoginPage() {
                       Password
                     </label>
                     <div className="relative group">
-                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600 transition-colors group-focus-within:text-green-700" />
+                      <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600" />
                       <Input
                         id="password"
+                        name="password"
                         type="password"
+                        value={formData.password}
+                        onChange={handleInputChange}
                         placeholder="Enter your password"
-                        className="pl-10 border-green-200 focus:border-green-500 focus:ring-green-500 transition-all duration-200 hover:border-green-300"
-                        aria-label="Password"
+                        className="pl-10 border-green-200 focus:border-green-500"
                         required
                       />
                     </div>
                   </div>
 
-                  {/* Forgot Password */}
+                  {/* Remember Me & Forgot Password */}
                   <div className="flex items-center justify-between">
                     <label className="flex items-center space-x-2 cursor-pointer">
-                      <input type="checkbox" className="rounded border-green-300 text-green-600 focus:ring-green-500" />
+                      <input
+                        type="checkbox"
+                        name="remember"
+                        checked={formData.remember}
+                        onChange={handleInputChange}
+                        className="rounded border-green-300 text-green-600"
+                      />
                       <span className="text-sm text-gray-600">Remember me</span>
                     </label>
                     <Link
                       href="/forgot-password"
-                      className="text-sm text-green-600 hover:text-green-700 hover:underline transition-colors"
+                      className="text-sm text-green-600 hover:text-green-700 hover:underline"
                     >
                       Forgot password?
                     </Link>
                   </div>
 
-                  {/* Login Button */}
+                  {/* Submit Button */}
                   <Button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
-                    size="lg"
+                    className="w-full bg-green-600 hover:bg-green-700"
+                    disabled={isLoading}
                   >
-                    Sign In
+                    {isLoading ? (
+                      <span className="flex items-center justify-center">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Signing in...
+                      </span>
+                    ) : (
+                      'Sign In'
+                    )}
                   </Button>
                 </form>
 
