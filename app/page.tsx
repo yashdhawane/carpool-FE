@@ -19,250 +19,24 @@ import {
   Menu,
 } from "lucide-react"
 import Link from "next/link"
-
+import {HeroIllustration} from "@/illustration/HeroIllustration"
+import {BenefitsIllustration} from "@/illustration/BenefitsIllustration"
+import {SafetyIllustration} from "@/illustration/SafetyIllustration"
+import {MobileAppIllustration} from "@/illustration/MobileAppIllustration"
 // Custom SVG Illustrations
-const HeroIllustration = () => (
-  <div className="relative w-full h-full flex items-center justify-center animate-float">
-    <svg viewBox="0 0 400 300" className="w-full h-full max-w-md">
-      {/* Background circles for depth */}
-      <circle cx="200" cy="150" r="120" fill="#dcfce7" className="animate-pulse-slow" />
-      <circle cx="200" cy="150" r="80" fill="#bbf7d0" className="animate-pulse-slow animate-delay-1000" />
 
-      {/* Main car */}
-      <g className="animate-bounce-subtle">
-        <rect x="120" y="120" width="160" height="60" rx="30" fill="#16a34a" />
-        <rect x="130" y="110" width="140" height="40" rx="20" fill="#22c55e" />
 
-        {/* Windows */}
-        <rect x="140" y="115" width="30" height="25" rx="5" fill="#e0f2fe" opacity="0.8" />
-        <rect x="180" y="115" width="40" height="25" rx="5" fill="#e0f2fe" opacity="0.8" />
-        <rect x="230" y="115" width="30" height="25" rx="5" fill="#e0f2fe" opacity="0.8" />
 
-        {/* Wheels */}
-        <circle cx="150" cy="180" r="15" fill="#374151" />
-        <circle cx="250" cy="180" r="15" fill="#374151" />
-        <circle cx="150" cy="180" r="8" fill="#6b7280" />
-        <circle cx="250" cy="180" r="8" fill="#6b7280" />
-      </g>
 
-      {/* Passengers (dots) */}
-      <circle cx="155" cy="127" r="3" fill="#1f2937" className="animate-pulse" />
-      <circle cx="200" cy="127" r="3" fill="#1f2937" className="animate-pulse animate-delay-500" />
-      <circle cx="245" cy="127" r="3" fill="#1f2937" className="animate-pulse animate-delay-1000" />
 
-      {/* Eco elements */}
-      <g className="animate-sway">
-        <path d="M80 80 Q85 70 90 80 Q85 90 80 80" fill="#22c55e" />
-        <path d="M85 85 Q90 75 95 85 Q90 95 85 85" fill="#16a34a" />
-      </g>
 
-      <g className="animate-sway animate-delay-1000">
-        <path d="M310 70 Q315 60 320 70 Q315 80 310 70" fill="#22c55e" />
-        <path d="M315 75 Q320 65 325 75 Q320 85 315 75" fill="#16a34a" />
-      </g>
 
-      {/* CO2 reduction indicator */}
-      <g className="animate-fade-in-up animate-delay-2000">
-        <rect x="160" y="60" width="80" height="25" rx="12" fill="#dcfce7" stroke="#16a34a" strokeWidth="2" />
-        <text x="200" y="75" textAnchor="middle" fontSize="10" fill="#16a34a" fontWeight="bold">
-          -75% CO₂
-        </text>
-      </g>
-    </svg>
-  </div>
-)
-
-const BenefitsIllustration = () => (
-  <div className="relative w-full h-full flex items-center justify-center">
-    <svg viewBox="0 0 400 300" className="w-full h-full max-w-md">
-      {/* Earth/Globe */}
-      <circle cx="200" cy="150" r="80" fill="#22c55e" className="animate-pulse-slow" />
-      <circle cx="200" cy="150" r="70" fill="#16a34a" />
-
-      {/* Continents */}
-      <path
-        d="M160 120 Q180 110 200 120 Q220 115 240 125 Q235 140 220 145 Q200 150 180 145 Q165 140 160 120"
-        fill="#15803d"
-      />
-      <path d="M170 160 Q190 155 210 160 Q225 165 230 180 Q215 185 200 180 Q185 175 170 160" fill="#15803d" />
-
-      {/* Money savings */}
-      <g className="animate-bounce-subtle animate-delay-500">
-        <circle cx="120" cy="100" r="25" fill="#fef3c7" stroke="#f59e0b" strokeWidth="2" />
-        <text x="120" y="107" textAnchor="middle" fontSize="16" fill="#f59e0b" fontWeight="bold">
-          $
-        </text>
-        <path
-          d="M95 85 L105 75 M135 75 L145 85"
-          stroke="#f59e0b"
-          strokeWidth="2"
-          fill="none"
-          className="animate-pulse"
-        />
-      </g>
-
-      {/* People connection */}
-      <g className="animate-fade-in-up animate-delay-1000">
-        <circle cx="300" cy="120" r="12" fill="#3b82f6" />
-        <circle cx="320" cy="140" r="12" fill="#8b5cf6" />
-        <circle cx="280" cy="140" r="12" fill="#ef4444" />
-        <path d="M300 132 Q310 135 320 128 M300 132 Q290 135 280 128" stroke="#6b7280" strokeWidth="2" fill="none" />
-      </g>
-
-      {/* Green leaves floating */}
-      <g className="animate-float animate-delay-1500">
-        <path d="M100 200 Q105 190 110 200 Q105 210 100 200" fill="#22c55e" />
-        <path d="M320 200 Q325 190 330 200 Q325 210 320 200" fill="#22c55e" />
-        <path d="M150 250 Q155 240 160 250 Q155 260 150 250" fill="#16a34a" />
-      </g>
-
-      {/* Connecting lines */}
-      <path
-        d="M145 125 Q170 140 195 130"
-        stroke="#22c55e"
-        strokeWidth="2"
-        fill="none"
-        strokeDasharray="5,5"
-        className="animate-dash"
-      />
-      <path
-        d="M275 135 Q250 145 225 140"
-        stroke="#22c55e"
-        strokeWidth="2"
-        fill="none"
-        strokeDasharray="5,5"
-        className="animate-dash animate-delay-500"
-      />
-    </svg>
-  </div>
-)
-
-const SafetyIllustration = () => (
-  <div className="relative w-full h-full flex items-center justify-center">
-    <svg viewBox="0 0 300 300" className="w-full h-full max-w-sm">
-      {/* Shield background */}
-      <path
-        d="M150 50 L200 80 L200 180 Q200 220 150 240 Q100 220 100 180 L100 80 Z"
-        fill="#dcfce7"
-        className="animate-pulse-slow"
-      />
-      <path d="M150 60 L190 85 L190 175 Q190 210 150 225 Q110 210 110 175 L110 85 Z" fill="#22c55e" />
-
-      {/* Checkmark */}
-      <g className="animate-draw-check animate-delay-1000">
-        <path
-          d="M125 150 L140 165 L175 130"
-          stroke="white"
-          strokeWidth="6"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </g>
-
-      {/* Stars around shield */}
-      <g className="animate-twinkle">
-        <path d="M80 100 L85 110 L95 110 L87 117 L90 127 L80 120 L70 127 L73 117 L65 110 L75 110 Z" fill="#fbbf24" />
-      </g>
-      <g className="animate-twinkle animate-delay-500">
-        <path
-          d="M220 120 L225 130 L235 130 L227 137 L230 147 L220 140 L210 147 L213 137 L205 130 L215 130 Z"
-          fill="#fbbf24"
-        />
-      </g>
-      <g className="animate-twinkle animate-delay-1000">
-        <path
-          d="M100 220 L105 230 L115 230 L107 237 L110 247 L100 240 L90 247 L93 237 L85 230 L95 230 Z"
-          fill="#fbbf24"
-        />
-      </g>
-
-      {/* User avatars */}
-      <circle cx="120" cy="200" r="15" fill="#3b82f6" className="animate-bounce-subtle" />
-      <circle cx="150" cy="210" r="15" fill="#8b5cf6" className="animate-bounce-subtle animate-delay-300" />
-      <circle cx="180" cy="200" r="15" fill="#ef4444" className="animate-bounce-subtle animate-delay-600" />
-    </svg>
-  </div>
-)
-
-const MobileAppIllustration = () => (
-  <div className="relative w-full h-full flex items-center justify-center">
-    <svg viewBox="0 0 200 350" className="w-full h-full max-w-xs">
-      {/* Phone outline */}
-      <rect x="20" y="20" width="160" height="310" rx="25" fill="#1f2937" />
-      <rect x="30" y="40" width="140" height="270" rx="15" fill="#ffffff" />
-
-      {/* Screen content */}
-      <rect x="40" y="60" width="120" height="30" rx="15" fill="#22c55e" className="animate-pulse-slow" />
-      <text x="100" y="78" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">
-        RideShare
-      </text>
-
-      {/* Map representation */}
-      <rect x="40" y="100" width="120" height="80" rx="8" fill="#f3f4f6" />
-      <path
-        d="M50 120 Q80 110 110 120 Q140 130 150 140"
-        stroke="#22c55e"
-        strokeWidth="3"
-        fill="none"
-        className="animate-dash"
-      />
-
-      {/* Location pins */}
-      <g className="animate-bounce-subtle">
-        <circle cx="60" cy="125" r="4" fill="#ef4444" />
-        <path d="M60 121 L60 129 L64 125 Z" fill="#ef4444" />
-      </g>
-      <g className="animate-bounce-subtle animate-delay-500">
-        <circle cx="140" cy="145" r="4" fill="#22c55e" />
-        <path d="M140 141 L140 149 L144 145 Z" fill="#22c55e" />
-      </g>
-
-      {/* Ride cards */}
-      <rect x="40" y="190" width="120" height="25" rx="5" fill="#f9fafb" stroke="#e5e7eb" />
-      <circle cx="55" cy="202" r="6" fill="#3b82f6" />
-      <rect x="70" y="197" width="40" height="3" rx="1" fill="#d1d5db" />
-      <rect x="70" y="203" width="60" height="3" rx="1" fill="#d1d5db" />
-      <text x="140" y="205" fontSize="8" fill="#22c55e" fontWeight="bold">
-        $15
-      </text>
-
-      <rect x="40" y="220" width="120" height="25" rx="5" fill="#f9fafb" stroke="#e5e7eb" />
-      <circle cx="55" cy="232" r="6" fill="#8b5cf6" />
-      <rect x="70" y="227" width="35" height="3" rx="1" fill="#d1d5db" />
-      <rect x="70" y="233" width="55" height="3" rx="1" fill="#d1d5db" />
-      <text x="140" y="235" fontSize="8" fill="#22c55e" fontWeight="bold">
-        $12
-      </text>
-
-      {/* Bottom button */}
-      <rect x="50" y="260" width="100" height="30" rx="15" fill="#22c55e" className="animate-pulse-slow" />
-      <text x="100" y="278" textAnchor="middle" fontSize="10" fill="white" fontWeight="bold">
-        Book Ride
-      </text>
-
-      {/* Floating elements */}
-      <g className="animate-float animate-delay-1000">
-        <circle cx="190" cy="100" r="8" fill="#fef3c7" />
-        <text x="190" y="104" textAnchor="middle" fontSize="8" fill="#f59e0b">
-          💰
-        </text>
-      </g>
-      <g className="animate-float animate-delay-1500">
-        <circle cx="10" cy="200" r="8" fill="#dcfce7" />
-        <text x="10" y="204" textAnchor="middle" fontSize="8" fill="#22c55e">
-          🌱
-        </text>
-      </g>
-    </svg>
-  </div>
-)
 
 export default function CarpoolingLanding() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className="fixed w-full px-4 lg:px-6 h-16 flex items-center border-b bg-white/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
+      <header className=" w-full px-4 lg:px-6 h-16 flex items-center border-b bg-white/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
         <Link className="flex items-center justify-center group" href="#" aria-label="RideShare Home">
           <Car className="h-8 w-8 text-green-600 transition-transform group-hover:scale-110" />
           <span className="ml-2 text-xl font-bold text-gray-900">RideShare</span>
@@ -291,14 +65,14 @@ export default function CarpoolingLanding() {
             className="hover:bg-green-50 transition-colors"
             aria-label="Log in to your account"
           >
-            Log in
+            <Link href="/login">Log in</Link>
           </Button>
           <Button
             size="sm"
             className="bg-green-600 hover:bg-green-700 transform hover:scale-105 transition-all duration-200"
             aria-label="Sign up for RideShare"
           >
-            Sign up
+           <Link href="/signup">Sign up</Link>
           </Button>
           <Button
             variant="ghost"
@@ -420,7 +194,7 @@ export default function CarpoolingLanding() {
                 </Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">How RideShare works</h2>
                 <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Getting around has never been easier. Here's how it works.
+                  Getting around has never been easier. Here how it works.
                 </p>
               </div>
             </div>
@@ -552,7 +326,7 @@ export default function CarpoolingLanding() {
                 </Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">Your safety is our priority</h2>
                 <p className="max-w-[900px] text-gray-600 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  We've built multiple safety features to ensure you have a secure and comfortable journey.
+                  We built multiple safety features to ensure you have a secure and comfortable journey.
                 </p>
               </div>
             </div>
@@ -622,7 +396,7 @@ export default function CarpoolingLanding() {
                 </Badge>
                 <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-white">Drive and earn money</h2>
                 <p className="max-w-[900px] text-green-100 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Turn your empty seats into extra income. Offer rides on routes you're already taking.
+                  Turn your empty seats into extra income. Offer rides on routes you already taking.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
