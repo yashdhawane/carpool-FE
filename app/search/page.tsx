@@ -1,5 +1,5 @@
+'use client'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -10,17 +10,20 @@ import {
   MapPin,
   Calendar,
   Users,
-  ArrowLeft,
-  ArrowRight,
   Star,
   Shield,
   Clock,
   Cigarette,
   PawPrint,
-  SlidersHorizontal,
+  Plus,
+  ChevronDown,
+  User,
+  RotateCcw,
 } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { useUser } from "@/hooks/useUser"
+import { useRouter } from "next/navigation"
 
 // Sample ride data
 const rides = [
@@ -159,83 +162,130 @@ const rides = [
 ]
 
 export default function SearchPage() {
+    const {user}=useUser();
+    const router = useRouter();
+    console.log(user)
+    const checkrole=()=>{
+        
+        console.log(user)
+        if (!user) return alert('Login required');
+        if (user?.role === 'passenger') {
+        router.push('/create-driver-profile');
+      } else {
+        router.push('/create-ride');
+      }
+    }
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-50">
+      <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
           {/* Top Navigation */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
+            {/* Logo */}
             <Link className="flex items-center group" href="/">
-              <ArrowLeft className="h-5 w-5 text-green-600 mr-2 group-hover:-translate-x-1 transition-transform" />
               <Car className="h-8 w-8 text-green-600" />
               <span className="ml-2 text-xl font-bold text-gray-900">RideShare</span>
             </Link>
+
+            {/* Right Side - Publish Ride + User Avatar */}
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="outline"
+                onClick={checkrole}
+                className="border-green-600 text-green-600 hover:bg-green-50 flex items-center space-x-2"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Publish a ride</span>
+              </Button>
+
+              <div className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 rounded-lg p-2 transition-colors">
+                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              </div>
+            </div>
           </div>
 
           {/* Search Form */}
-          <Card className="shadow-lg border-green-100">
-            <CardContent className="p-4">
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                <div className="relative">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">From</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-green-600" />
-                    <Input
-                      value="Mumbai, Maharashtra, India"
-                      className="pl-10 border-green-200 focus:border-green-500"
-                      readOnly
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+            <div className="flex items-center space-x-4">
+              {/* From Field */}
+              <div className="flex-1 relative">
+                <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:border-green-300 focus-within:border-green-500 transition-colors">
+                  <MapPin className="w-5 h-5 text-green-600 flex-shrink-0" />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="From"
+                      defaultValue="Mumbai, Maharashtra, India"
+                      className="w-full text-gray-900 placeholder-gray-500 border-none outline-none bg-transparent"
                     />
                   </div>
                 </div>
+              </div>
 
-                <div className="flex justify-center">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full hover:bg-green-50 text-green-600"
-                    aria-label="Swap locations"
-                  >
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
+              {/* Swap Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full hover:bg-green-50 text-green-600 flex-shrink-0"
+                aria-label="Swap locations"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </Button>
 
-                <div className="relative">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">To</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-red-500" />
-                    <Input
-                      value="Pune, Maharashtra, India"
-                      className="pl-10 border-green-200 focus:border-green-500"
-                      readOnly
+              {/* To Field */}
+              <div className="flex-1 relative">
+                <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:border-green-300 focus-within:border-green-500 transition-colors">
+                  <MapPin className="w-5 h-5 text-red-500 flex-shrink-0" />
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      placeholder="To"
+                      defaultValue="Pune, Maharashtra, India"
+                      className="w-full text-gray-900 placeholder-gray-500 border-none outline-none bg-transparent"
                     />
                   </div>
                 </div>
+              </div>
 
-                <div className="relative">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Date</label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input value="Today" className="pl-10 border-green-200 focus:border-green-500" readOnly />
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Passengers</label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input value="2 passengers" className="pl-10 border-green-200 focus:border-green-500" readOnly />
+              {/* Date Field */}
+              <div className="w-40 relative">
+                <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:border-green-300 focus-within:border-green-500 transition-colors">
+                  <Calendar className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                  <div className="flex-1">
+                    <input
+                      type="date"
+                      defaultValue={new Date().toISOString().split("T")[0]}
+                      className="w-full text-gray-900 border-none outline-none bg-transparent"
+                    />
                   </div>
                 </div>
               </div>
-              <div className="flex justify-center mt-4">
-                <Button className="bg-green-600 hover:bg-green-700 px-8">
-                  <SlidersHorizontal className="mr-2 h-4 w-4" />
-                  Update Search
-                </Button>
+
+              {/* Passengers Field */}
+              <div className="w-36 relative">
+                <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:border-green-300 focus-within:border-green-500 transition-colors">
+                  <Users className="w-5 h-5 text-gray-500 flex-shrink-0" />
+                  <div className="flex-1">
+                    <select className="w-full text-gray-900 border-none outline-none bg-transparent" defaultValue="1">
+                      <option value="1">1 passenger</option>
+                      <option value="2">2 passengers</option>
+                      <option value="3">3 passengers</option>
+                      <option value="4">4 passengers</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+
+              {/* Search Button */}
+              <Button className="bg-green-600 hover:bg-green-700 px-8 py-3 text-white font-medium rounded-lg">
+                Search
+              </Button>
+            </div>
+          </div>
         </div>
       </header>
 
