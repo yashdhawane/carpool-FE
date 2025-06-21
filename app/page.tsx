@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   Car,
   Users,
-  MapPin,
-  Calendar,
+ 
   DollarSign,
   Leaf,
   Shield,
@@ -23,6 +22,7 @@ import {HeroIllustration} from "@/illustration/landingpage/HeroIllustration"
 import {BenefitsIllustration} from "@/illustration/landingpage/BenefitsIllustration"
 import {SafetyIllustration} from "@/illustration/landingpage/SafetyIllustration"
 import {MobileAppIllustration} from "@/illustration/landingpage/MobileAppIllustration"
+import { RideSearchForm } from "@/components/searchform/page"
 // Custom SVG Illustrations
 
 
@@ -114,7 +114,7 @@ export default function CarpoolingLanding() {
                 </div>
 
                 {/* Enhanced Search Form */}
-                <Card className="w-full max-w-md shadow-lg hover:shadow-xl transition-shadow duration-300 border-green-100">
+                {/* <Card className="w-full max-w-md shadow-lg hover:shadow-xl transition-shadow duration-300 border-green-100">
                   <CardContent className="p-6">
                     <form className="space-y-4" role="search" aria-label="Find rides">
                       <div className="relative group">
@@ -151,7 +151,9 @@ export default function CarpoolingLanding() {
                       </Button>
                     </form>
                   </CardContent>
-                </Card>
+                </Card> */}
+
+                <RideSearchForm />
               </div>
               <div className="flex items-center justify-center animate-slide-in-right">
                 <HeroIllustration />
