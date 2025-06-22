@@ -10,7 +10,7 @@ import {LoginIllustration} from "@/illustration/login/LoginIllustration"
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Toaster, toast } from 'react-hot-toast';
-
+import { useUser } from '@/hooks/useUser';
 
 interface FormData {
   
@@ -40,6 +40,7 @@ export default function LoginPage() {
     
     
   });
+  const { loadUser } = useUser();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -70,6 +71,7 @@ export default function LoginPage() {
           position: 'top-center',
           icon: '👋',
         });
+        loadUser(); // Load user data into context
         router.push('/search'); // Redirect to login page
       }
 

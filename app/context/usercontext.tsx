@@ -13,6 +13,7 @@ interface User {
 interface UserContextType {
   user: User | null;
   setUser: (user: User | null) => void;
+  loadUser: () => void;
 }
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -20,7 +21,7 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
+  const loadUser = () => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
@@ -31,9 +32,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(null);
       }
     }
-  }, []);
-
+  }
+useEffect(() => {
+    loadUser()
+    // Listen for storage changes (other tabs)
+    const onStorage = () => loadUser()
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
   return (
-    <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>
+    <UserContext.Provider value={{ user, setUser ,loadUser}}>{children}</UserContext.Provider>
   );
 };

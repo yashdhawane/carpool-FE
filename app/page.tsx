@@ -15,7 +15,7 @@ import {
   Clock,
   CheckCircle,
   Smartphone,
-  Menu,
+  
 } from "lucide-react"
 import Link from "next/link"
 import {HeroIllustration} from "@/illustration/landingpage/HeroIllustration"
@@ -23,6 +23,7 @@ import {BenefitsIllustration} from "@/illustration/landingpage/BenefitsIllustrat
 import {SafetyIllustration} from "@/illustration/landingpage/SafetyIllustration"
 import {MobileAppIllustration} from "@/illustration/landingpage/MobileAppIllustration"
 import { RideSearchForm } from "@/components/searchform/page"
+import Header from "@/components/header/Header"
 // Custom SVG Illustrations
 
 
@@ -36,54 +37,7 @@ export default function CarpoolingLanding() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header */}
-      <header className=" w-full px-4 lg:px-6 h-16 flex items-center border-b bg-white/95 backdrop-blur-sm sticky top-0 z-50 transition-all duration-300">
-        <Link className="flex items-center justify-center group" href="#" aria-label="RideShare Home">
-          <Car className="h-8 w-8 text-green-600 transition-transform group-hover:scale-110" />
-          <span className="ml-2 text-xl font-bold text-gray-900">RideShare</span>
-        </Link>
-        <nav className="ml-auto hidden md:flex gap-6" role="navigation" aria-label="Main navigation">
-          <Link
-            className="text-sm font-medium hover:text-green-600 transition-colors relative group"
-            href="#how-it-works"
-          >
-            How it works
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
-          </Link>
-          <Link className="text-sm font-medium hover:text-green-600 transition-colors relative group" href="#safety">
-            Safety
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
-          </Link>
-          <Link className="text-sm font-medium hover:text-green-600 transition-colors relative group" href="#about">
-            About
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
-          </Link>
-        </nav>
-        <div className="ml-6 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="hover:bg-green-50 transition-colors"
-            aria-label="Log in to your account"
-          >
-            <Link href="/login">Log in</Link>
-          </Button>
-          <Button
-            size="sm"
-            className="bg-green-600 hover:bg-green-700 transform hover:scale-105 transition-all duration-200"
-            aria-label="Sign up for RideShare"
-          >
-           <Link href="/signup">Sign up</Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden hover:bg-green-50 transition-colors"
-            aria-label="Open mobile menu"
-          >
-            <Menu className="h-5 w-5" />
-          </Button>
-        </div>
-      </header>
+      <Header/>
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -153,7 +107,7 @@ export default function CarpoolingLanding() {
                   </CardContent>
                 </Card> */}
 
-                <RideSearchForm />
+               <RideSearchForm variant="home" />
               </div>
               <div className="flex items-center justify-center animate-slide-in-right">
                 <HeroIllustration />
