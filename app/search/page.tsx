@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from "react"
+import { fetchWithAuth } from "@/app/utils/fetchWithAuth"  
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -57,13 +58,13 @@ export default function SearchPage() {
           page: String(page),
           limit: String(limit),
         }).toString()
-        const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-        const res = await fetch(`http://localhost:3001/v1/rides/search?${params}`, {
-          headers: {
-            "Content-Type": "application/json",
-            ...(token && { Authorization: `Bearer ${token}` }),
-          },
-        });
+        // const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+        const res = await fetchWithAuth(`http://localhost:3001/v1/rides/search?${params}`)
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //     ...(token && { Authorization: `Bearer ${token}` }),
+        //   },
+        // });
         if(res.status===404){
           const data = await res.json();
           setRides([]);

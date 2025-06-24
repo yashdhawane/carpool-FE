@@ -54,7 +54,12 @@ async function getRideDetails(id: string) {
 }
 
 export default async function RideDetailsPage({ params }: { params: { id: string } }) {
-  const ride = await getRideDetails(params.id)
+  const awaitedparam = await params;
+  const id = awaitedparam.id;
+  if (!id) {
+    return <div className="container mx-auto px-4 py-6">Ride not found</div>
+  }
+  const ride = await getRideDetails(id)
 
   return (
     <div className="min-h-screen bg-gray-50">
