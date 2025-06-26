@@ -14,7 +14,7 @@ interface ConfirmedPassengersProps {
 }
 
 // This is a Server Component that can fetch real-time data
-export async function ConfirmedPassengers({ passengers }: ConfirmedPassengersProps) {
+export  function ConfirmedPassengers({ passengers }: ConfirmedPassengersProps) {
   // In a real app, you might fetch the latest passenger data here
   // const latestPassengers = await fetchConfirmedPassengers(rideId)
 
