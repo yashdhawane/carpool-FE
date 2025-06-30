@@ -1,9 +1,9 @@
 import { RouteDetails } from "@/components/ride/route-details"
 import { DriverProfile } from "@/components/ride/driver-profile"
 import { BookingPanel } from "@/components/ride/booking-panel"
-import { ArrowLeft, Car } from "lucide-react"
-import Link from "next/link"
+
 import { ConfirmedPassengersClient } from "@/components/server/confirmedpassenger"
+import { RideBackButton } from "@/components/ride/handle-back"
 
 // This would typically come from your database
 async function getRideDetails(id: string) {
@@ -78,6 +78,7 @@ export default async function RideDetailsPage({ params }: { params: { id: string
     })),
   }
 
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -85,11 +86,7 @@ export default async function RideDetailsPage({ params }: { params: { id: string
       <header className="bg-white border-b sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center">
-            <Link className="flex items-center group" href="/search">
-              <ArrowLeft className="h-5 w-5 text-green-600 mr-2 group-hover:-translate-x-1 transition-transform" />
-              <Car className="h-8 w-8 text-green-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">RideShare</span>
-            </Link>
+           <RideBackButton/>
           </div>
         </div>
       </header>
@@ -119,6 +116,7 @@ export default async function RideDetailsPage({ params }: { params: { id: string
               driver={ride.driver}
               price={ride.price}
               availableSeats={ride.availableSeats}
+              rideId={ride.id}
             />
           </div>
         </div>

@@ -2,9 +2,12 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Car, Star, Users, Minus, Plus, CreditCard } from "lucide-react"
+import { Car, Star, Users, Minus, Plus, CreditCard ,Loader2 ,CheckCircle2 } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { fetchWithAuth } from "@/app/utils/fetchWithAuth"
+import { useUser } from "@/hooks/useUser"
 
 interface BookingPanelProps {
   route: {
@@ -27,10 +30,48 @@ interface BookingPanelProps {
   }
   price: number
   availableSeats: number
+  rideId: string
 }
 
-export function BookingPanel({ route, date, driver, price, availableSeats }: BookingPanelProps) {
+export function BookingPanel({ route, date, driver, price, availableSeats ,rideId}: BookingPanelProps) {
   const [selectedPassengers, setSelectedPassengers] = useState(1)
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  const [alreadyBooked, setAlreadyBooked] = useState(false)
+  const router = useRouter()
+  const { user } = useUser()
+
+  useEffect(() => {
+    const checkAlreadyBooked = async () => {
+      if (!user) {
+        setIsCheckingStatus(false)
+        return
+      }
+      try {
+        const res = await fetchWithAuth(
+          `http://localhost:3001/v1/rides/${rideId}/booking-status`,
+          { method: "GET" }
+        )
+        if (res.ok) {
+          const data = await res.json()
+          setAlreadyBooked(data.alreadyBooked)
+        }
+      } finally {
+        setIsCheckingStatus(false)
+      }
+    }
+    checkAlreadyBooked()
+  }, [user, rideId])
+
+  if (isCheckingStatus) {
+  return (
+    <div className="flex items-center justify-center h-48 bg-white rounded-xl shadow-md">
+      <Loader2 className="w-6 h-6 text-green-600 animate-spin" />
+      <span className="ml-2 text-gray-600">Checking booking status...</span>
+    </div>
+  );
+}
 
   const handlePassengerChange = (change: number) => {
     const newCount = selectedPassengers + change
@@ -38,10 +79,94 @@ export function BookingPanel({ route, date, driver, price, availableSeats }: Boo
       setSelectedPassengers(newCount)
     }
   }
+  
+if (!user) {
+  return (
+    <Card className="border-green-100 shadow-lg">
+      <CardContent className="p-6 space-y-6 text-center">
+        <div className="text-xl font-semibold text-gray-800">
+          Want to book this ride?
+        </div>
+        <p className="text-gray-600">
+          Please <span className="text-green-600 font-semibold">log in</span> to continue with your booking.
+        </p>
+        <Button
+          className="bg-green-600 hover:bg-green-700 text-white"
+          onClick={() => router.push("/login")}
+        >
+          Log in to Book
+        </Button>
+      </CardContent>
+    </Card>
+  )
+}
+
+  const handleBooking = async () => {
+    // const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null
+    // if (!token) {
+    //   router.push("/login")
+    //   return
+    // }
+    if (!user) {
+      alert("Please log in to book a ride")
+      router.push("/login")
+      return
+    }
+
+    setLoading(true)
+    setSuccess(false)
+    console.log(selectedPassengers, rideId)
+    try {
+       const res = await fetchWithAuth(
+        `http://localhost:3001/v1/rides/book/${rideId}`,
+        {
+          method: "POST",
+          body: JSON.stringify({ seats: selectedPassengers }),
+        }
+    )
+      if (!res.ok) throw new Error("Booking failed")
+      setSuccess(true)
+      setAlreadyBooked(true)
+      setTimeout(() => setSuccess(false), 2500) // Hide splash after 2.5s
+    } catch (err) {
+      alert(`Booking failed. Please try again. ${err}`)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const totalPrice = price * selectedPassengers
 
+  if (loading) {
   return (
+    <div className="flex flex-col items-center justify-center h-96 bg-white rounded-xl shadow-lg">
+      <Loader2 className="w-16 h-16 text-green-600 animate-spin mb-4" />
+      <div className="text-lg font-semibold text-gray-700">Sending request...</div>
+    </div>
+  )
+}
+
+if (success || alreadyBooked) {
+  return (
+    <div className="flex flex-col items-center justify-center h-96 bg-white rounded-xl shadow-lg">
+      <CheckCircle2 className="w-16 h-16 text-green-600 mb-4" />
+      <div className="text-xl font-bold text-green-700 mb-2">Request sent to the driver!</div>
+      <div className="text-gray-600 mb-6 text-center">
+        You’ll be notified once the driver responds to your booking request.
+      </div>
+      <Button
+        className="bg-green-600 hover:bg-green-700 text-white"
+         onClick={() => router.push("/")}
+      >
+        Book another ride
+      </Button>
+    </div>
+  )
+}
+
+
+  return (
+    
     <Card className="sticky top-24 border-green-100 shadow-lg">
       <CardContent className="p-6 space-y-6">
         {/* Route Summary */}
@@ -140,7 +265,9 @@ export function BookingPanel({ route, date, driver, price, availableSeats }: Boo
         </div>
 
         {/* Book Button */}
-        <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-medium">
+        <Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 text-lg font-medium"
+          onClick={handleBooking}
+          disabled={loading || alreadyBooked}>
           <CreditCard className="w-5 h-5 mr-2" />
           Request to book
         </Button>

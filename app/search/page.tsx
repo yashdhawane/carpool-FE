@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react"
 import { fetchWithAuth } from "@/app/utils/fetchWithAuth"  
-import { useRouter, useSearchParams } from "next/navigation"
+import {  useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -23,8 +23,12 @@ import Navbar from "@/components/header/navbar"
 import { RideSearchForm } from "@/components/searchform/page"
 
 export default function SearchPage() {
-  const router = useRouter()
+  // const router = useRouter()
   const searchParams = useSearchParams()
+  const from = searchParams.get("from") || ""
+const to = searchParams.get("to") || ""
+const date = searchParams.get("date") || ""
+const seats = searchParams.get("seats") || ""
   
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [rides, setRides] = useState<any[]>([])
@@ -36,13 +40,13 @@ export default function SearchPage() {
   const limit = 6 // Default rides per page
 
   // Redirect to home on back button
-  useEffect(() => {
-    const handlePopState = () => {
-      router.replace("/")
-    }
-    window.addEventListener("popstate", handlePopState)
-    return () => window.removeEventListener("popstate", handlePopState)
-  }, [router])
+  // useEffect(() => {
+  //   const handlePopState = () => {
+  //     router.replace("/")
+  //   }
+  //   window.addEventListener("popstate", handlePopState)
+  //   return () => window.removeEventListener("popstate", handlePopState)
+  // }, [router])
 
   // Fetch rides from backend when search params or page changes
   useEffect(() => {
@@ -65,6 +69,11 @@ export default function SearchPage() {
         //     ...(token && { Authorization: `Bearer ${token}` }),
         //   },
         // });
+        if (res.status === 429) {
+    setError("Too many requests. Please try again later.")
+    setLoading(false)
+    return
+  }
         if(res.status===404){
           const data = await res.json();
           setRides([]);
@@ -279,7 +288,7 @@ export default function SearchPage() {
             <div className="lg:col-span-3">
               <div className="space-y-4">
                 {rides.map((ride) => (
-                  <Link key={ride.id} href={`/ride/${ride.id}`}>
+                  <Link key={ride.id} href={`/ride/${ride.id}?from=${from}&to=${to}&date=${date}&seats=${seats}`}>
                     <Card className="hover:shadow-lg transition-shadow duration-200 border-green-100 hover:border-green-200 cursor-pointer">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
