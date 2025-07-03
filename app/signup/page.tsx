@@ -79,7 +79,7 @@ export default function SignupPage() {
         position: 'top-center',
         icon: '🎉',
       });
-        router.push('/search'); // Redirect to login page
+        router.push('/login'); // Redirect to login page
       }
     } 
     // Ignore the TypeScript error on the next line

@@ -1,9 +1,12 @@
-import { RouteDetails } from "@/components/ride/route-details"
-import { DriverProfile } from "@/components/ride/driver-profile"
-import { BookingPanel } from "@/components/ride/booking-panel"
 
+import { RouteDetails } from "@/components/ride/route-details"
+// import { DriverProfile } from "@/components/ride/driver-profile"
+// import { BookingPanel } from "@/components/ride/booking-panel"
+import { RideDetailsClient } from "@/components/ride/ridedetailsclient"
 import { ConfirmedPassengersClient } from "@/components/server/confirmedpassenger"
 import { RideBackButton } from "@/components/ride/handle-back"
+import { DriverProfileClient } from "@/components/ride/driverprofileclient"
+
 
 // This would typically come from your database
 async function getRideDetails(id: string) {
@@ -100,8 +103,9 @@ export default async function RideDetailsPage({ params }: { params: { id: string
             <RouteDetails route={ride.route} date={ride.date} />
 
             {/* Driver Profile Component */}
-            <DriverProfile driver={ride.driver} />
+            {/* <DriverProfile driver={ride.driver} /> */}
 
+            <DriverProfileClient driver ={driverData}/>
             {/* Confirmed Passengers Server Component */}
             {/* <Suspense fallback={<div className="p-8 text-center text-gray-400">Loading passengers...</div>}> */}
               <ConfirmedPassengersClient rideId={ride.id} />
@@ -110,14 +114,16 @@ export default async function RideDetailsPage({ params }: { params: { id: string
 
           {/* Right Side - 1/3 width */}
           <div className="lg:col-span-1">
-            <BookingPanel
+            {/* <BookingPanel
               route={ride.route}
               date={ride.date}
               driver={ride.driver}
               price={ride.price}
               availableSeats={ride.availableSeats}
               rideId={ride.id}
-            />
+            /> */}
+
+            <RideDetailsClient ride={ride} driverId={rideData.driverId} />
           </div>
         </div>
       </div>

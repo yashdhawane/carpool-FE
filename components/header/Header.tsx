@@ -50,6 +50,13 @@ export default function Header() {
           Safety
           <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
         </Link>
+        {user && (user.role === "driver" || user.role === "both") && (
+  // <Link href="/my-rides" className="...">My Rides</Link>
+   <Link  href="/my-rides" className="text-sm font-medium hover:text-green-600 transition-colors relative group">
+          My Rides
+          <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
+        </Link>
+)}
         <Link className="text-sm font-medium hover:text-green-600 transition-colors relative group" href="#about">
           About
           <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-600 transition-all group-hover:w-full"></span>
