@@ -292,7 +292,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Car, Star, Users, Minus, Plus, CreditCard, Loader2, CheckCircle2, XCircle } from "lucide-react"
 import Image from "next/image"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { fetchWithAuth } from "@/app/utils/fetchWithAuth"
 import { useUser } from "@/hooks/useUser"
@@ -317,6 +317,7 @@ export function BookingPanel({ route, date, driver, price, availableSeats, rideI
   const router = useRouter()
   const { user } = useUser()
 
+  
   // Poll booking status every 5 seconds
   const { data: bookingStatus, isLoading: isCheckingStatus, mutate } = useSWR(
     user ? `http://localhost:3001/v1/rides/${rideId}/booking-status` : null,
@@ -335,6 +336,14 @@ const { data: rideLive, isLoading: rideLoading } = useSWR(
   rideFetcher,
   { refreshInterval: 5000 }
 )
+useEffect(() => {
+  if (!success || !bookingStatus?.data) return
+
+  const status = bookingStatus.data.status
+  if (["pending", "accepted", "rejected"].includes(status)) {
+    setSuccess(false)
+  }
+}, [bookingStatus, success])
 
 if (rideLoading) {
   return (
@@ -351,7 +360,14 @@ if (rideLoading) {
   //     setSelectedPassengers(newCount)
   //   }
   // }
-const dynamicAvailableSeats = rideLive?.data?.availableSeats ?? availableSeats
+
+  const totalSeats = rideLive?.data?.availableSeats ?? availableSeats
+type Passenger = { seats?: number }
+const bookedSeats = Array.isArray(rideLive?.data?.passengers)
+  ? rideLive.data.passengers.reduce((sum: number, p: Passenger) => sum + (p.seats || 1), 0)
+  : 0
+const dynamicAvailableSeats = totalSeats - bookedSeats
+// const dynamicAvailableSeats = rideLive?.data?.availableSeats ?? availableSeats
 
 const handlePassengerChange = (change: number) => {
   const newCount = selectedPassengers + change
@@ -440,7 +456,7 @@ const handlePassengerChange = (change: number) => {
     }
 
     setLoading(true)
-    setSuccess(false)
+    setSuccess(true)
     try {
       const res = await fetchWithAuth(
         `http://localhost:3001/v1/rides/book/${rideId}`,
@@ -450,7 +466,7 @@ const handlePassengerChange = (change: number) => {
         }
       )
       if (!res.ok) throw new Error("Booking failed")
-      setSuccess(true)
+      // setSuccess(true)
       mutate() // Refresh booking status
       setTimeout(() => setSuccess(false), 2500)
     } catch (err) {
@@ -470,6 +486,15 @@ const handlePassengerChange = (change: number) => {
       </div>
     )
   }
+if (success || (!bookingStatus?.alreadyBooked && loading)) {
+  return (
+    <div className="flex flex-col items-center justify-center h-96 bg-white rounded-xl shadow-lg">
+      <Loader2 className="w-16 h-16 text-green-600 animate-spin mb-4" />
+      <div className="text-lg font-semibold text-gray-700">Sending booking request...</div>
+    </div>
+  )
+}
+
 
   return (
     <Card className="sticky top-24 border-green-100 shadow-lg">
@@ -573,8 +598,7 @@ const handlePassengerChange = (change: number) => {
   <div className="flex items-center space-x-2">
     <Users className="w-4 h-4 text-green-600" />
     <span className="text-sm text-green-800">
-      {(rideLive?.data?.availableSeats ?? availableSeats)} seat
-      {(rideLive?.data?.availableSeats ?? availableSeats) > 1 ? "s" : ""} available
+       {dynamicAvailableSeats} seat{dynamicAvailableSeats > 1 ? "s" : ""} available
     </span>
   </div>
 </div>
